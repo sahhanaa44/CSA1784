@@ -1,23 +1,34 @@
-N = 8
+def solve_queens(n):
+    board = [-1] * n
+    result = []
 
-def solve(board, row):
-    if row == N:
-        for r in board:
-            print(r)
+    def is_valid(row, col):
+        for i in range(row):
+            if board[i] == col or abs(row - i) == abs(col - board[i]):
+                return False
         return True
 
-    for col in range(N):
-        safe = True
-        for i in range(row):
-            q = board[i].index('Q')
-            if q == col or abs(q-col) == abs(i-row):
-                safe = False
+    def backtrack(row):
+        if row == n:
+            result.append(list(board))
+            return
 
-        if safe:
-            board[row][col] = 'Q'
-            if solve(board, row+1):
-                return True
-            board[row][col] = '.'
+        for col in range(n):
+            if is_valid(row, col):
+                board[row] = col
+                backtrack(row + 1)
+                board[row] = -1
 
-board = [['.']*N for _ in range(N)]
-solve(board,0)
+    backtrack(0)
+    return result
+
+solutions = solve_queens(8)
+
+print("Total solutions:", len(solutions))
+
+for solution in solutions[:1]:
+    for row in range(8):
+        line = ""
+        for col in range(8):
+            line += "Q " if solution[row] == col else "- "
+        print(line)
