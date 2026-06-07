@@ -1,18 +1,34 @@
 from itertools import permutations
 
-letters = "SENDMORY"
-digits = range(10)
+def solve_cryptarithmetic(words, result_word):
+    letters = set("".join(words) + result_word)
 
-for p in permutations(digits, 8):
-    S,E,N,D,M,O,R,Y = p
+    if len(letters) > 10:
+        return None
 
-    if S == 0 or M == 0:
-        continue
+    letters = list(letters)
+    leading = {w[0] for w in words + [result_word]}
 
-    send = 1000*S+100*E+10*N+D
-    more = 1000*M+100*O+10*R+E
-    money = 10000*M+1000*O+100*N+10*E+Y
+    for perm in permutations(range(10), len(letters)):
+        mapping = dict(zip(letters, perm))
 
-    if send + more == money:
-        print(send, "+", more, "=", money)
-        break
+        if any(mapping[l] == 0 for l in leading):
+            continue
+
+        def to_num(word):
+            return int("".join(str(mapping[c]) for c in word))
+
+        if sum(to_num(w) for w in words) == to_num(result_word):
+            return mapping
+
+    return None
+
+words = ["SEND", "MORE"]
+result_word = "MONEY"
+
+mapping = solve_cryptarithmetic(words, result_word)
+
+if mapping:
+    print("Solution:", mapping)
+else:
+    print("No solution found.")
